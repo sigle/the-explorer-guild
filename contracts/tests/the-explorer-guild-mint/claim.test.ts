@@ -155,11 +155,11 @@ Clarinet.test({
     assetMaps = chain.getAssetsMaps();
     assertEquals(
       assetMaps.assets["STX"][wallet_deployer.address],
-      balanceWalletDeployer + 10000000
+      balanceWalletDeployer + 100000000
     );
     assertEquals(
       assetMaps.assets["STX"][wallet_1.address],
-      balanceWallet1 - 10000000
+      balanceWallet1 - 100000000
     );
   },
 });
