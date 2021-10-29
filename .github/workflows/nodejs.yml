@@ -1,0 +1,29 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-contracts:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contracts
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install clarinet
+        run: |
+          wget -L https://github.com/hirosystems/clarinet/releases/download/v0.18.0/clarinet-linux-x64.zip
+          unzip clarinet-linux-x64.zip -d .
+          chmod +x ./clarinet
+          mkdir -p "$HOME/.local/bin"
+          mv ./clarinet "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Test contracts
+        run: clarinet test
