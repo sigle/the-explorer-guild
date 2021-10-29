@@ -1,0 +1,15 @@
+[project]
+name = "contracts"
+requirements = []
+
+[contracts.the-explorer-guild]
+path = "contracts/the-explorer-guild.clar"
+depends_on = ["nft-trait"]
+
+[contracts.the-explorer-guild-mint]
+path = "contracts/the-explorer-guild-mint.clar"
+depends_on = ["the-explorer-guild"]
+
+[contracts.nft-trait]
+path = "contracts/nft-trait.clar"
+depends_on = []
