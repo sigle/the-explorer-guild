@@ -150,16 +150,16 @@ Clarinet.test({
     let { sender, recipient, amount } = event.stx_transfer_event;
     sender.expectPrincipal(wallet_1.address);
     recipient.expectPrincipal(wallet_deployer.address);
-    amount.expectInt(10000000);
+    amount.expectInt(100000000);
 
     assetMaps = chain.getAssetsMaps();
     assertEquals(
       assetMaps.assets["STX"][wallet_deployer.address],
-      balanceWalletDeployer + 10000000
+      balanceWalletDeployer + 100000000
     );
     assertEquals(
       assetMaps.assets["STX"][wallet_1.address],
-      balanceWallet1 - 10000000
+      balanceWallet1 - 100000000
     );
   },
 });
