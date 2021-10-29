@@ -94,5 +94,6 @@
 (as-contract (contract-call? .the-explorer-guild set-mint-address))
 
 ;; Whitelisted addresses
+;; Test addresses, will be replaced
 (map-set presale-count 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5 u2)
 (map-set presale-count 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG u2)
