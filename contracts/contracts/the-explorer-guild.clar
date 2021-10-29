@@ -4,8 +4,7 @@
 (define-non-fungible-token The-Explorer-Guild uint)
 
 (define-constant contract-owner tx-sender)
-;; TODO production value
-(define-constant max-mint-number u10)
+(define-constant max-mint-number u10000)
 ;; Define errors
 (define-constant err-not-owner (err u403)) ;; Forbidden
 (define-constant err-cant-pay-mint-price (err u10))
