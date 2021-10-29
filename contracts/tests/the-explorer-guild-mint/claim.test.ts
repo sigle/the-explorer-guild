@@ -150,7 +150,7 @@ Clarinet.test({
     let { sender, recipient, amount } = event.stx_transfer_event;
     sender.expectPrincipal(wallet_1.address);
     recipient.expectPrincipal(wallet_deployer.address);
-    amount.expectInt(10000000);
+    amount.expectInt(100000000);
 
     assetMaps = chain.getAssetsMaps();
     assertEquals(
