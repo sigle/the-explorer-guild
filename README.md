@@ -1,6 +1,10 @@
-![Dev mode](assets/the-explorer-guild-logo.svg)
+<div align="center">
 
-# The Explorer Guild
+<img width="160" height="105" src="assets/the-explorer-guild-logo.svg">
+
+<h1>The Explorer Guild</h1>
+
+</div>
 
 10 000 NFT unique and randomly generated NFTs on the Stacks blockchain. Hand drawn and inspired by the famous writer [Jules Verne](https://en.wikipedia.org/wiki/Jules_Verne). To learn more about the project you can check out the website https://www.explorerguild.io or [join our discord](https://discord.gg/X2Dbz3xbrs).
 
