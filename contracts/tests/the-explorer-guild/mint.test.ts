@@ -8,7 +8,7 @@ Clarinet.test({
       Tx.contractCall(
         "the-explorer-guild",
         "mint",
-        [types.principal(wallet_1.address)],
+        [types.principal(wallet_1.address), types.bool(false)],
         wallet_1.address
       ),
     ]);
