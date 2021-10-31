@@ -5,6 +5,9 @@
 
 (define-constant contract-owner tx-sender)
 (define-constant max-mint-number u10000)
+;; Contract for the transfer of intellectual property rights
+;; Stored on arweave, can be read from any gateway, eg: https://arweave.net/wP_i3PftSxnfyhk61eyrypojMP3zqTdwzCgYTzktRLk
+(define-constant intelectual-property-document-hash "ar://wP_i3PftSxnfyhk61eyrypojMP3zqTdwzCgYTzktRLk")
 ;; Define errors
 (define-constant err-not-owner (err u403)) ;; Forbidden
 (define-constant err-cant-pay-mint-price (err u10))
