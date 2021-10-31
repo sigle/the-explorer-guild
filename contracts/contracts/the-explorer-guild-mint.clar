@@ -48,6 +48,66 @@
     (try! (claim))
     (ok true)))
 
+(define-public (claim-six)
+  (begin
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (ok true)))
+
+(define-public (claim-seven)
+  (begin
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (ok true)))
+
+(define-public (claim-height)
+  (begin
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (ok true)))
+
+(define-public (claim-nine)
+  (begin
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (ok true)))
+
+(define-public (claim-ten)
+  (begin
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (try! (claim))
+    (ok true)))
+
 ;; Get the remaning presale balance for a principal
 (define-read-only (get-presale-balance (account principal))
   (default-to u0
