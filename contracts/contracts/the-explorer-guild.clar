@@ -107,12 +107,16 @@
 
 ;; Mint new NFT
 ;; Can only be called by the-explorer-guild mint contract
-(define-public (mint (new-owner principal))
+(define-public (mint (new-owner principal) (promo bool))
     (let ((next-id (+ u1 (var-get last-id))))
       (asserts! (called-from-mint) err-not-owner)
       (asserts! (<= next-id max-mint-number) err-all-minted)
 
-      (unwrap! (stx-transfer? (var-get mint-price) tx-sender contract-owner) err-failed-to-transfer)
+      ;; Only transfer STX if it's a non promo mint
+      (if (is-eq promo true)
+        true
+        (unwrap! (stx-transfer? (var-get mint-price) tx-sender contract-owner) err-failed-to-transfer)
+      )
 
       (match (nft-mint? The-Explorer-Guild next-id new-owner)
         success

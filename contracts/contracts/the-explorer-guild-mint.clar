@@ -6,11 +6,14 @@
 (define-constant err-presale-not-active (err u10))
 (define-constant err-sale-not-active (err u11))
 (define-constant err-no-presale-spot-remaining (err u12))
+(define-constant err-no-promo-mint-remaining (err u13))
 
 ;; Store if the presale is active or not
 (define-data-var presale-active bool false)
 ;; Store if the sale is active or not
 (define-data-var sale-active bool false)
+;; Amount of mint allowed for the team, giveways, promotion etc..
+(define-data-var promo-mint-number uint u150)
 
 ;; Claim a new NFT
 (define-public (claim)
@@ -108,6 +111,24 @@
     (try! (claim))
     (ok true)))
 
+;; Claim 10 promo NFT
+(define-public (promo-claim-ten)
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-not-owner)
+    (asserts! (> (var-get promo-mint-number) u0) err-no-promo-mint-remaining)
+    (var-set promo-mint-number (- (var-get promo-mint-number) u10))
+    (try! (contract-call? .the-explorer-guild mint tx-sender true))
+    (try! (contract-call? .the-explorer-guild mint tx-sender true))
+    (try! (contract-call? .the-explorer-guild mint tx-sender true))
+    (try! (contract-call? .the-explorer-guild mint tx-sender true))
+    (try! (contract-call? .the-explorer-guild mint tx-sender true))
+    (try! (contract-call? .the-explorer-guild mint tx-sender true))
+    (try! (contract-call? .the-explorer-guild mint tx-sender true))
+    (try! (contract-call? .the-explorer-guild mint tx-sender true))
+    (try! (contract-call? .the-explorer-guild mint tx-sender true))
+    (try! (contract-call? .the-explorer-guild mint tx-sender true))
+    (ok true)))
+
 ;; Get the remaning presale balance for a principal
 (define-read-only (get-presale-balance (account principal))
   (default-to u0
@@ -120,13 +141,13 @@
     (map-set presale-count
               new-owner
               (- presale-balance u1))
-  (contract-call? .the-explorer-guild mint new-owner)))
+  (contract-call? .the-explorer-guild mint new-owner false)))
 
 ;; Internal - Mint public sale NFT
 (define-private (public-mint (new-owner principal))
   (begin
     (asserts! (var-get sale-active) err-sale-not-active)
-    (contract-call? .the-explorer-guild mint new-owner)))
+    (contract-call? .the-explorer-guild mint new-owner false)))
 
 (define-public (enable-presale)
   (begin
