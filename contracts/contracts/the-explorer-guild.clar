@@ -19,7 +19,7 @@
 ;; Store the price of each mint
 (define-data-var mint-price uint u100000000)
 ;; Store the root token uri used to query metadata
-(define-data-var base-token-uri (string-ascii 210) "https://www.explorerguild.io/api/metatada/")
+(define-data-var base-token-uri (string-ascii 210) "https://www.explorerguild.io/api/metadata/")
 ;; Used to determine if metadata is frozen
 (define-data-var metadata-frozen bool false)
 ;; Store the mint address allowed to trigger minting
