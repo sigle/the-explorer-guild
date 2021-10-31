@@ -74,7 +74,7 @@ Clarinet.test({
     block.receipts[0].result
       .expectOk()
       .expectSome()
-      .expectAscii("https://www.explorerguild.io/api/metatada/1.json");
+      .expectAscii("https://www.explorerguild.io/api/metadata/1.json");
     block.receipts[1].result.expectOk().expectBool(true);
     block.receipts[2].result
       .expectOk()

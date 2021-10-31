@@ -18,7 +18,7 @@ Clarinet.test({
     block.receipts[0].result
       .expectOk()
       .expectSome()
-      .expectAscii(`${rootApiUrl}/api/metatada/1.json`);
+      .expectAscii(`${rootApiUrl}/api/metadata/1.json`);
   },
 });
 
@@ -38,6 +38,6 @@ Clarinet.test({
     block.receipts[0].result
       .expectOk()
       .expectSome()
-      .expectAscii(`${rootApiUrl}/api/metatada/10000.json`);
+      .expectAscii(`${rootApiUrl}/api/metadata/10000.json`);
   },
 });
