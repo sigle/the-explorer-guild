@@ -59,7 +59,7 @@
 (define-read-only (get-starting-index)
   (ok (var-get starting-index)))
 
-;; Return the starting index number
+;; Return the provenance hash
 (define-read-only (get-provenance-hash)
   (ok (var-get provenance-hash)))
 
