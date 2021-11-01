@@ -18,6 +18,7 @@
 (define-constant err-metadata-frozen (err u13))
 (define-constant err-mint-address-already-set (err u14))
 (define-constant err-starting-index-already-set (err u15))
+(define-constant err-provenance-hash-already-set (err u16))
 
 ;; Store the last issues token ID
 (define-data-var last-id uint u0)
@@ -31,6 +32,8 @@
 (define-map mint-address bool principal)
 ;; Store the stating index used for the provenance hash solution
 (define-data-var starting-index uint u0)
+;; Provance hash for the images
+(define-data-var provenance-hash (string-ascii 256) "")
 
 ;; SIP009: Transfer token to a specified principal
 (define-public (transfer (token-id uint) (sender principal) (recipient principal))
@@ -55,6 +58,10 @@
 ;; Return the starting index number
 (define-read-only (get-starting-index)
   (ok (var-get starting-index)))
+
+;; Return the provenance hash
+(define-read-only (get-provenance-hash)
+  (ok (var-get provenance-hash)))
 
 ;; Allow the contract owner to change the mint price
 (define-public (set-mint-price (new-mint-price uint))
@@ -93,6 +100,16 @@
             (ok (var-set starting-index random-id)))
       )
      err-value (err err-value)))
+)
+
+;; Set the provenance hash for the collection
+;; Can only be set once
+(define-public (set-provenance-hash (new-provenance-hash (string-ascii 256)))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-not-owner)
+    (asserts! (is-eq (var-get provenance-hash) "") err-provenance-hash-already-set)
+    (ok (var-set provenance-hash new-provenance-hash))
+  )
 )
 
 ;; Manage the Mint
