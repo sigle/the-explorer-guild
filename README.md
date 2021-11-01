@@ -10,6 +10,11 @@
 
 This mono-repository contains the Stacks Smart Contracts written in Clarity, as well as the server code used to serve the metadata. You can find more information in the sub folders readme.
 
+## Important information
+
+- Contract address: [SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173](https://explorer.stacks.co/address/SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173?chain=mainnet)
+- Provenance hash: [2f2df159abd91a57b342593537af944d8480039467ef8c31fe5871625c3b8e13](https://explorer.stacks.co/txid/0xd4a3a4cb16f4cbe2e2b00862bc7dc7244903787f9a91e49d09e1ff520a1f987e?chain=mainnet)
+
 ## How the release will work
 
 The release will be done in 2 steps:
