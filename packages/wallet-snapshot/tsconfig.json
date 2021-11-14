@@ -3,7 +3,8 @@
     "moduleResolution": "node",
     "lib": ["ESNext"],
     "strict": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "skipLibCheck": true
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]

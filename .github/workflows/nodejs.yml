@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-contracts:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     defaults:
       run:
         working-directory: contracts
@@ -27,3 +27,25 @@ jobs:
 
       - name: Test contracts
         run: clarinet test
+
+  test-wallet-snapshot:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: packages/wallet-snapshot
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6.20.3
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
