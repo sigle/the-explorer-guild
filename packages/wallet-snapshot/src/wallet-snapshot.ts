@@ -6,29 +6,54 @@ import { writeFileSync } from "fs";
 import { uintCV, callReadOnlyFunction, cvToJSON } from "@stacks/transactions";
 import { request } from "undici";
 
+function sliceIntoChunks(arr: any[], chunkSize: number): string[][] {
+  const res = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    const chunk = arr.slice(i, i + chunkSize);
+    res.push(chunk);
+  }
+  return res;
+}
+
 const run = async () => {
   const collectionSize = 2503;
+  const chunkSize = 10;
   console.log(`Taking a snapshot of the ${collectionSize} NFTs...`);
 
+  // 1. Get all the addresses that own the NFT
   const addresses: string[] = [];
 
   const arrayHelper = [...Array(collectionSize).keys()];
   // const arrayHelper = [...Array(3).keys()];
 
-  // 1. Get all the addresses that own the NFT
-  for (const value of arrayHelper) {
-    const index = value + 1;
-    const response = await callReadOnlyFunction({
-      contractAddress: "SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173",
-      contractName: "the-explorer-guild",
-      functionName: "get-owner",
-      senderAddress: "SP2KNQG5ZA7Z5TJ50CSQQM50RWZEB6MAZZE9YDZFS",
-      functionArgs: [uintCV(index)],
+  const arrayHelperChunks = sliceIntoChunks(arrayHelper, chunkSize);
+
+  for (const [index, chunk] of arrayHelperChunks.entries()) {
+    console.log(
+      `processing chunk ${index} (${index * chunkSize}), ${
+        arrayHelper.length - index * chunkSize
+      } NFTs left`
+    );
+
+    const newAddresses = await Promise.all(
+      chunk.map(async (value) => {
+        const nftIndex = value + 1;
+        const response = await callReadOnlyFunction({
+          contractAddress: "SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173",
+          contractName: "the-explorer-guild",
+          functionName: "get-owner",
+          senderAddress: "SP2KNQG5ZA7Z5TJ50CSQQM50RWZEB6MAZZE9YDZFS",
+          functionArgs: [uintCV(nftIndex)],
+        });
+        const data = cvToJSON(response);
+        const address = data.value.value.value;
+        return address;
+      })
+    );
+
+    newAddresses.forEach((address) => {
+      addresses.push(address);
     });
-    const data = cvToJSON(response);
-    const address = data.value.value.value;
-    addresses.push(address);
-    console.log(`${index} - ${address}`);
   }
 
   // 2. Get the real addresses for the items which are listed on marketplaces
