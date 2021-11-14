@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "scripts": {
+    "prettier": "prettier --write \"**/*.{js,ts,tsx,css,scss,json,md,mdx,yml}\"",
+    "prepare": "husky install"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx,css,scss,json,md,mdx,yml}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "devDependencies": {
+    "husky": "7.0.4",
+    "lint-staged": "11.2.4",
+    "prettier": "2.4.1"
+  }
+}
