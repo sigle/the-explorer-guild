@@ -2,7 +2,7 @@
   "name": "wallet-snapshot",
   "private": true,
   "scripts": {
-    "wallet-snapshot": "ts-node scripts/wallet-snapshot.ts"
+    "wallet-snapshot": "ts-node src/wallet-snapshot.ts"
   },
   "dependencies": {
     "@stacks/transactions": "2.0.1",
