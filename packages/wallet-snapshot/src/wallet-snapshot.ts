@@ -20,6 +20,7 @@ const run = async () => {
   const chunkSize = 10;
   console.log(`Taking a snapshot of the ${collectionSize} NFTs...`);
 
+  const stats = { uniqueAddresses: 0, stxNft: 0 };
   const addresses: string[] = [];
   const arrayHelper = [...Array(collectionSize).keys()];
   // const arrayHelper = [...Array(3).keys()];
@@ -74,6 +75,7 @@ const run = async () => {
       }
       const owner = data.listing.owner;
       addresses[index] = owner;
+      stats.stxNft += 1;
     }
 
     // TODO Stacks Art
@@ -88,8 +90,10 @@ const run = async () => {
       uniqueAddresses[address].value++;
     }
   });
+  stats.uniqueAddresses = Object.keys(uniqueAddresses).length;
 
-  console.log(`Unique addresses found: ${Object.keys(uniqueAddresses).length}`);
+  console.log(`Unique addresses found: ${stats.uniqueAddresses}`);
+  console.log(`NFTs listed on StxNft: ${stats.stxNft}`);
 
   // 4. Create snapshot file
   writeFileSync(
