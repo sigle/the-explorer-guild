@@ -15,6 +15,37 @@ function sliceIntoChunks(arr: any[], chunkSize: number): string[][] {
   return res;
 }
 
+function wait(delay: number) {
+  return new Promise((resolve) => setTimeout(resolve, delay));
+}
+
+function callReadOnlyFunctionRetry(
+  options: {
+    contractAddress: string;
+    contractName: string;
+    functionName: string;
+    functionArgs: any[];
+    senderAddress: string;
+  },
+  delay: number,
+  tries: number
+): any {
+  function onError(err: Error) {
+    const triesLeft = tries - 1;
+    if (!triesLeft) {
+      console.log(`Out of retries, failing`);
+      throw err;
+    }
+    console.log(
+      `Waiting ${delay}, ${triesLeft} tries left for function ${options.functionName}`
+    );
+    return wait(delay).then(() =>
+      callReadOnlyFunctionRetry(options, delay, triesLeft)
+    );
+  }
+  return callReadOnlyFunction(options).catch(onError);
+}
+
 const run = async () => {
   const collectionSize = 2503;
   const chunkSize = 10;
@@ -38,13 +69,17 @@ const run = async () => {
     const newAddresses = await Promise.all(
       chunk.map(async (value) => {
         const nftIndex = value + 1;
-        const response = await callReadOnlyFunction({
-          contractAddress: "SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173",
-          contractName: "the-explorer-guild",
-          functionName: "get-owner",
-          senderAddress: "SP2KNQG5ZA7Z5TJ50CSQQM50RWZEB6MAZZE9YDZFS",
-          functionArgs: [uintCV(nftIndex)],
-        });
+        const response = await callReadOnlyFunctionRetry(
+          {
+            contractAddress: "SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173",
+            contractName: "the-explorer-guild",
+            functionName: "get-owner",
+            functionArgs: [uintCV(nftIndex)],
+            senderAddress: "SP2KNQG5ZA7Z5TJ50CSQQM50RWZEB6MAZZE9YDZFS",
+          },
+          1000,
+          10
+        );
         const data = cvToJSON(response);
         const address = data.value.value.value;
         return address;
