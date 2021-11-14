@@ -3,10 +3,14 @@
  * a The Explorer Guild NFT.
  */
 import { writeFileSync } from "fs";
-import { uintCV, callReadOnlyFunction, cvToJSON } from "@stacks/transactions";
-import { request } from "undici";
+import { uintCV, cvToJSON } from "@stacks/transactions";
+import {
+  callReadOnlyFunctionRetry,
+  resolveStacksArtOwner,
+  resolveStxNftOwner,
+} from "./utils";
 
-function sliceIntoChunks(arr: any[], chunkSize: number): string[][] {
+function sliceIntoChunks(arr: any[], chunkSize: number): number[][] {
   const res = [];
   for (let i = 0; i < arr.length; i += chunkSize) {
     const chunk = arr.slice(i, i + chunkSize);
@@ -15,46 +19,14 @@ function sliceIntoChunks(arr: any[], chunkSize: number): string[][] {
   return res;
 }
 
-function wait(delay: number) {
-  return new Promise((resolve) => setTimeout(resolve, delay));
-}
-
-function callReadOnlyFunctionRetry(
-  options: {
-    contractAddress: string;
-    contractName: string;
-    functionName: string;
-    functionArgs: any[];
-    senderAddress: string;
-  },
-  delay: number,
-  tries: number
-): any {
-  function onError(err: Error) {
-    const triesLeft = tries - 1;
-    if (!triesLeft) {
-      console.log(`Out of retries, failing`);
-      throw err;
-    }
-    console.log(
-      `Waiting ${delay}, ${triesLeft} tries left for function ${options.functionName}`
-    );
-    return wait(delay).then(() =>
-      callReadOnlyFunctionRetry(options, delay, triesLeft)
-    );
-  }
-  return callReadOnlyFunction(options).catch(onError);
-}
-
 const run = async () => {
   const collectionSize = 2503;
-  const chunkSize = 10;
+  const chunkSize = 20;
   console.log(`Taking a snapshot of the ${collectionSize} NFTs...`);
 
-  const stats = { uniqueAddresses: 0, stxNft: 0 };
+  const stats = { uniqueAddresses: 0, stxNft: 0, stacksArt: 0 };
   const addresses: string[] = [];
   const arrayHelper = [...Array(collectionSize).keys()];
-  // const arrayHelper = [...Array(3).keys()];
   const arrayHelperChunks = sliceIntoChunks(arrayHelper, chunkSize);
 
   // 1. Get all the addresses that own the NFT
@@ -81,7 +53,21 @@ const run = async () => {
           10
         );
         const data = cvToJSON(response);
-        const address = data.value.value.value;
+        let address: string = data.value.value.value;
+
+        // Get the real addresses for the items which are listed on marketplaces
+        if (
+          address === "SPNWZ5V2TPWGQGVDR6T7B6RQ4XMGZ4PXTEE0VQ0S.marketplace-v4"
+        ) {
+          address = await resolveStxNftOwner(nftIndex);
+          stats.stxNft += 1;
+        } else if (
+          address ===
+          "SPJW1XE278YMCEYMXB8ZFGJMH8ZVAAEDP2S2PJYG.stacks-art-market-v2"
+        ) {
+          address = await resolveStacksArtOwner(nftIndex);
+          stats.stacksArt += 1;
+        }
         return address;
       })
     );
@@ -91,32 +77,7 @@ const run = async () => {
     });
   }
 
-  // 2. Get the real addresses for the items which are listed on marketplaces
-  for (const [index, address] of addresses.entries()) {
-    const nftNumber = index + 1;
-    if (address === "SPNWZ5V2TPWGQGVDR6T7B6RQ4XMGZ4PXTEE0VQ0S.marketplace-v4") {
-      const { statusCode, body } = await request(
-        `https://stxnft.com/api/marketplace?owner=SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173.the-explorer-guild:${nftNumber}`
-      );
-      if (statusCode !== 200) {
-        throw new Error(`Failed to get marketplace data for ${nftNumber}`);
-      }
-      let data = await body.json();
-      data = data[0];
-      if (!data) {
-        throw new Error(
-          `Failed to get marketplace data for ${nftNumber}, empty array`
-        );
-      }
-      const owner = data.listing.owner;
-      addresses[index] = owner;
-      stats.stxNft += 1;
-    }
-
-    // TODO Stacks Art
-  }
-
-  // 3. Remove duplicates
+  // 2. Remove duplicates
   const uniqueAddresses: { [key: string]: { value: number } } = {};
   addresses.forEach((address) => {
     if (!uniqueAddresses[address]) {
@@ -128,9 +89,10 @@ const run = async () => {
   stats.uniqueAddresses = Object.keys(uniqueAddresses).length;
 
   console.log(`Unique addresses found: ${stats.uniqueAddresses}`);
+  console.log(`NFTs listed on StacksArt: ${stats.stacksArt}`);
   console.log(`NFTs listed on StxNft: ${stats.stxNft}`);
 
-  // 4. Create snapshot file
+  // 3. Create snapshot file
   writeFileSync(
     "./snapshot.txt",
     `
