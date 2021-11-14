@@ -23,10 +23,10 @@ const run = async () => {
   const addresses: string[] = [];
   const arrayHelper = [...Array(collectionSize).keys()];
   // const arrayHelper = [...Array(3).keys()];
+  const arrayHelperChunks = sliceIntoChunks(arrayHelper, chunkSize);
 
   // 1. Get all the addresses that own the NFT
   // Use chunks to make multiple calls at the same time
-  const arrayHelperChunks = sliceIntoChunks(arrayHelper, chunkSize);
   for (const [index, chunk] of arrayHelperChunks.entries()) {
     console.log(
       `processing chunk ${index} (${index * chunkSize}), ${
