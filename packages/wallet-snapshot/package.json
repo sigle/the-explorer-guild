@@ -1,0 +1,16 @@
+{
+  "name": "wallet-snapshot",
+  "private": true,
+  "scripts": {
+    "run": "ts-node src/wallet-snapshot.ts",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@stacks/transactions": "2.0.1",
+    "undici": "4.10.0"
+  },
+  "devDependencies": {
+    "ts-node": "10.4.0",
+    "typescript": "4.4.4"
+  }
+}
