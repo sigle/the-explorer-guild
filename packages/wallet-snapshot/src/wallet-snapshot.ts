@@ -21,7 +21,7 @@ function sliceIntoChunks(arr: any[], chunkSize: number): number[][] {
 
 const run = async () => {
   const collectionSize = 2503;
-  const chunkSize = 20;
+  const chunkSize = 15;
   console.log(`Taking a snapshot of the ${collectionSize} NFTs...`);
 
   const stats = { uniqueAddresses: 0, stxNft: 0, stacksArt: 0 };
