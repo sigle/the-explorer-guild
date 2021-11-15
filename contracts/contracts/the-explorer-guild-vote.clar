@@ -17,7 +17,7 @@
   (default-to u0
     (map-get? vote-options vote-option)))
 
-;; Vote for a principal
+;; Vote for an option
 (define-public (vote (vote-option uint))
   (begin
     (asserts! (var-get vote-active) err-vote-not-active)
