@@ -1,6 +1,5 @@
 (define-constant contract-owner tx-sender)
-(define-constant err-failed-to-transfer-stx (err u10))
-(define-constant err-failed-to-transfer-nft (err u11))
+(define-constant err-failed-to-transfer (err u11))
 
 ;; Amount of mint allowed for the team, giveways, promotion etc..
 (define-data-var promo-mint-number uint u150)
@@ -14,7 +13,7 @@
     ;; Enable the sale so contract can mint
     (try! (contract-call? .the-explorer-guild-mint enable-sale))
     ;; Transfer 71 STX to the contract in order to mint
-    (unwrap! (stx-transfer? u71 contract-owner (as-contract tx-sender)) err-failed-to-transfer-stx)
+    (unwrap! (stx-transfer? u71 contract-owner (as-contract tx-sender)) err-failed-to-transfer)
     ;; Reduce contract price in order to mint
     ;; Not possible to set to 0 as stx-transfer will fail with u3
     (try! (contract-call? .the-explorer-guild set-mint-price u1))
