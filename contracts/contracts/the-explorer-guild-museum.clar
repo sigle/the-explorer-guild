@@ -13,17 +13,16 @@
     ;; Not possible to set to 0 as stx-transfer will fail
     (try! (contract-call? .the-explorer-guild set-mint-price u1))
     ;; TODO mint 497, 71 * 7
-    (try! (as-contract (contract-call? .the-explorer-guild-mint claim-seven)))
-    ;; Contract own the NFTs so transfer them to another address
-    (try! (as-contract (contract-call? .the-explorer-guild transfer u1 (as-contract tx-sender) contract-owner)))
-    (try! (as-contract (contract-call? .the-explorer-guild transfer u2 (as-contract tx-sender) contract-owner)))
-    (try! (as-contract (contract-call? .the-explorer-guild transfer u3 (as-contract tx-sender) contract-owner)))
-    (try! (as-contract (contract-call? .the-explorer-guild transfer u4 (as-contract tx-sender) contract-owner)))
-    (try! (as-contract (contract-call? .the-explorer-guild transfer u5 (as-contract tx-sender) contract-owner)))
-    (try! (as-contract (contract-call? .the-explorer-guild transfer u6 (as-contract tx-sender) contract-owner)))
-    (try! (as-contract (contract-call? .the-explorer-guild transfer u7 (as-contract tx-sender) contract-owner)))
+    (try! (claim-transfer))
     ;; Restore mint price
     (try! (contract-call? .the-explorer-guild set-mint-price u100000000))
     ;; Disable the sale to not allow new mints
     (try! (contract-call? .the-explorer-guild-mint disable-sale))
     (ok true)))
+
+;; Claim an NFT and transfer it to the contract owner wallet
+(define-private (claim-transfer)
+  (let (
+    (claim-id (try! (as-contract (contract-call? .the-explorer-guild-mint claim))))
+  )
+    (as-contract (contract-call? .the-explorer-guild transfer claim-id (as-contract tx-sender) contract-owner))))
