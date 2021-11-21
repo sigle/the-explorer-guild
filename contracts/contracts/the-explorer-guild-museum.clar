@@ -1,9 +1,6 @@
 (define-constant contract-owner tx-sender)
 (define-constant err-failed-to-transfer (err u11))
 
-;; Amount of mint allowed for the team, giveways, promotion etc..
-(define-data-var promo-mint-number uint u150)
-
 ;; TODO throw error if trying to mint more than 497 via mint function
 
 ;; Mint up to 497 Explorers in total
