@@ -18,8 +18,8 @@ jobs:
 
       - name: Install clarinet
         run: |
-          wget -L https://github.com/hirosystems/clarinet/releases/download/v0.19.1/clarinet-linux-x64.zip
-          unzip clarinet-linux-x64.zip -d .
+          wget -L https://github.com/hirosystems/clarinet/releases/download/v0.19.1/clarinet-linux-x64.tar.gz
+          tar xzf clarinet-linux-x64.tar.gz
           chmod +x ./clarinet
           mkdir -p "$HOME/.local/bin"
           mv ./clarinet "$HOME/.local/bin"
