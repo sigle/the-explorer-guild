@@ -95,12 +95,9 @@ const run = async () => {
   // 3. Create snapshot file
   writeFileSync(
     "./snapshot.txt",
-    `
+    `Address,NbNFTs
 ${Object.keys(uniqueAddresses)
-  .map(
-    (address) =>
-      `(map-set vote-count '${address} u${uniqueAddresses[address].value})`
-  )
+  .map((address) => `${address},${uniqueAddresses[address].value}`)
   .join("\n")}
 `,
     { encoding: "utf8" }
