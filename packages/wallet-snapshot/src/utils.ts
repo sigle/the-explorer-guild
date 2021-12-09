@@ -48,7 +48,7 @@ export const resolveStxNftOwner = async (
       functionName: "get-listing",
       functionArgs: [
         contractPrincipalCV(config.contractAddress, config.contractName),
-        uintCV(972),
+        uintCV(nftNumber),
       ],
       senderAddress: "SP2KNQG5ZA7Z5TJ50CSQQM50RWZEB6MAZZE9YDZFS",
     },
