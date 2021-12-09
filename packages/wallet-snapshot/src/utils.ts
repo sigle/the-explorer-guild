@@ -1,5 +1,9 @@
-import { callReadOnlyFunction, cvToJSON, uintCV } from "@stacks/transactions";
-import { request } from "undici";
+import {
+  callReadOnlyFunction,
+  cvToJSON,
+  uintCV,
+  contractPrincipalCV,
+} from "@stacks/transactions";
 import { config } from "./config";
 
 function wait(delay: number) {
@@ -36,20 +40,22 @@ export function callReadOnlyFunctionRetry(
 export const resolveStxNftOwner = async (
   nftNumber: number
 ): Promise<string> => {
-  const { statusCode, body } = await request(
-    `https://stxnft.com/api/marketplace?owner=${config.contractAddress}.${config.contractName}:${nftNumber}`
+  const response = await callReadOnlyFunctionRetry(
+    {
+      contractAddress: "SPNWZ5V2TPWGQGVDR6T7B6RQ4XMGZ4PXTEE0VQ0S",
+      contractName: "marketplace-v4",
+      functionName: "get-listing",
+      functionArgs: [
+        contractPrincipalCV(config.contractAddress, config.contractName),
+        uintCV(nftNumber),
+      ],
+      senderAddress: "SP2KNQG5ZA7Z5TJ50CSQQM50RWZEB6MAZZE9YDZFS",
+    },
+    1000,
+    10
   );
-  if (statusCode !== 200) {
-    throw new Error(`Failed to get marketplace data for ${nftNumber}`);
-  }
-  let data = await body.json();
-  data = data[0];
-  if (!data) {
-    throw new Error(
-      `Failed to get marketplace data for ${nftNumber}, empty array`
-    );
-  }
-  const owner = data.listing.owner;
+  const data = cvToJSON(response);
+  const owner = data.value.value.owner.value;
   return owner;
 };
 
