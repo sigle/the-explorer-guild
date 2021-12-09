@@ -6,7 +6,8 @@
     "build": "tsc --noEmit"
   },
   "dependencies": {
-    "@stacks/transactions": "2.0.1"
+    "@stacks/network": "3.0.0",
+    "@stacks/transactions": "3.0.0"
   },
   "devDependencies": {
     "@types/node": "16.11.12",

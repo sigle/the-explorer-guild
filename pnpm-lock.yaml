@@ -14,12 +14,14 @@ importers:
 
   packages/wallet-snapshot:
     specifiers:
-      '@stacks/transactions': 2.0.1
+      '@stacks/network': 3.0.0
+      '@stacks/transactions': 3.0.0
       '@types/node': 16.11.12
       ts-node: 10.4.0
       typescript: 4.5.2
     dependencies:
-      '@stacks/transactions': 2.0.1
+      '@stacks/network': 3.0.0
+      '@stacks/transactions': 3.0.0
     devDependencies:
       '@types/node': 16.11.12
       ts-node: 10.4.0_d1ba71cee4528a43e185cc3d6fa907dc
@@ -39,32 +41,26 @@ packages:
       '@cspotcode/source-map-consumer': 0.8.0
     dev: true
 
-  /@stacks/common/1.2.2:
-    resolution: {integrity: sha512-knCqq88EBRCN8AhS7+Sx2PJuRv0EFNChEpqLqCAchCHCQfp5bWad/47Zw+fLP9ccBwFXh4pl1wDtbQLBfDo0+A==}
-    dependencies:
-      cross-fetch: 3.1.4
-    dev: false
-
-  /@stacks/common/2.0.1:
-    resolution: {integrity: sha512-PXU3Niimk7WK6Q2uetPZmwGhCXIc1u8RBZWvHKYe4dZxdDgT0QLX+eNAui591lsPWOH4ZkhpgSyWtJrtM9hU8g==}
+  /@stacks/common/3.0.0:
+    resolution: {integrity: sha512-48zCfU8zX0r8b8eP2n6l/bicAiFQyHPTMimdBwot9JqgzWW8WqGpcZD3qSZIwV0tBHD5LMLxNY018OqQIH6c5Q==}
     dependencies:
       '@types/node': 14.17.33
-      bn.js: 5.2.0
+      bn.js: 4.12.0
       buffer: 6.0.3
       cross-fetch: 3.1.4
     dev: false
 
-  /@stacks/network/1.2.2:
-    resolution: {integrity: sha512-xcWwuRrLJn9qqi3PEBcP2UPZHQztTZd31C0aVlzYHttNMir/sY9SrUqSnw45z2Jo4O9pIYYPIiPRtdV91Ho3fw==}
+  /@stacks/network/3.0.0:
+    resolution: {integrity: sha512-JJbQqCN8JlJz8bZu7enW9OBkMG5vEfHnp0rdY6AEp3Gzq9JsFD1C0BbbhMv/IqmCcLuAGmMwo+2C1NKCDJBUdQ==}
     dependencies:
-      '@stacks/common': 1.2.2
+      '@stacks/common': 3.0.0
     dev: false
 
-  /@stacks/transactions/2.0.1:
-    resolution: {integrity: sha512-q+8nCbn+0m1T8NbGG2sfMcBcCxdaH/F+vgBEHkhMIFHFLYXVYBGYbTX2llGS9StLp/tQq6p2Bfb1kzKFSw8FRQ==}
+  /@stacks/transactions/3.0.0:
+    resolution: {integrity: sha512-icweWBhiuYLOE/kkhBrsVrpydJEBE9dtDAxX6kBkZ2oAn9BTnW/Tozpxr6Zp0kJEx1ZTndINW7xtrJUsdHw7jg==}
     dependencies:
-      '@stacks/common': 2.0.1
-      '@stacks/network': 1.2.2
+      '@stacks/common': 3.0.0
+      '@stacks/network': 3.0.0
       '@types/bn.js': 4.11.6
       '@types/elliptic': 6.4.14
       '@types/node': 14.17.33
@@ -202,10 +198,6 @@ packages:
 
   /bn.js/4.12.0:
     resolution: {integrity: sha512-c98Bf3tPniI+scsdk237ku1Dc3ujXQTSgyiPUDEOe7tRkhrqridvh8klBv0HCEso1OLOYcHuCv/cS6DNxKH+ZA==}
-    dev: false
-
-  /bn.js/5.2.0:
-    resolution: {integrity: sha512-D7iWRBvnZE8ecXiLj/9wbxH7Tk79fAh8IHaTNq1RWRixsS02W+5qS+iE9yq6RYl0asXx5tw0bLhmT5pIfbSquw==}
     dev: false
 
   /braces/3.0.2:
