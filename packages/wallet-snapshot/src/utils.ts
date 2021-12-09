@@ -4,7 +4,6 @@ import {
   uintCV,
   contractPrincipalCV,
 } from "@stacks/transactions";
-import { request } from "undici";
 import { config } from "./config";
 
 function wait(delay: number) {
