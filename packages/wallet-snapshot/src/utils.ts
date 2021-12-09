@@ -1,5 +1,6 @@
 import { callReadOnlyFunction, cvToJSON, uintCV } from "@stacks/transactions";
 import { request } from "undici";
+import { config } from "./config";
 
 function wait(delay: number) {
   return new Promise((resolve) => setTimeout(resolve, delay));
@@ -36,7 +37,7 @@ export const resolveStxNftOwner = async (
   nftNumber: number
 ): Promise<string> => {
   const { statusCode, body } = await request(
-    `https://stxnft.com/api/marketplace?owner=SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173.the-explorer-guild:${nftNumber}`
+    `https://stxnft.com/api/marketplace?owner=${config.contractAddress}.${config.contractName}:${nftNumber}`
   );
   if (statusCode !== 200) {
     throw new Error(`Failed to get marketplace data for ${nftNumber}`);
@@ -60,7 +61,7 @@ export const resolveStacksArtOwner = async (
       contractAddress: "SPJW1XE278YMCEYMXB8ZFGJMH8ZVAAEDP2S2PJYG",
       contractName: "stacks-art-market-v2",
       functionName: "get-item-for-sale",
-      functionArgs: [uintCV(16), uintCV(nftNumber)],
+      functionArgs: [uintCV(config.stacksArtCollectionId), uintCV(nftNumber)],
       senderAddress: "SP2KNQG5ZA7Z5TJ50CSQQM50RWZEB6MAZZE9YDZFS",
     },
     1000,
