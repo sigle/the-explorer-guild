@@ -22,7 +22,6 @@ export function callReadOnlyFunctionRetry(
   tries: number
 ): any {
   function onError(err: Error) {
-    console.log(err);
     const triesLeft = tries - 1;
     if (!triesLeft) {
       console.log(`Out of retries, failing`);
