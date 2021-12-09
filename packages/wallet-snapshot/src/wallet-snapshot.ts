@@ -94,7 +94,7 @@ const run = async () => {
 
   // 3. Create snapshot file
   writeFileSync(
-    "./snapshot.txt",
+    "./snapshot.csv",
     `Address,NbNFTs
 ${Object.keys(uniqueAddresses)
   .map((address) => `${address},${uniqueAddresses[address].value}`)
