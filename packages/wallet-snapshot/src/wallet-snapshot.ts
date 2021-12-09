@@ -9,6 +9,7 @@ import {
   resolveStacksArtOwner,
   resolveStxNftOwner,
 } from "./utils";
+import { config } from "./config";
 
 function sliceIntoChunks(arr: any[], chunkSize: number): number[][] {
   const res = [];
@@ -43,8 +44,8 @@ const run = async () => {
         const nftIndex = value + 1;
         const response = await callReadOnlyFunctionRetry(
           {
-            contractAddress: "SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173",
-            contractName: "the-explorer-guild",
+            contractAddress: config.contractAddress,
+            contractName: config.contractName,
             functionName: "get-owner",
             functionArgs: [uintCV(nftIndex)],
             senderAddress: "SP2KNQG5ZA7Z5TJ50CSQQM50RWZEB6MAZZE9YDZFS",
@@ -94,13 +95,10 @@ const run = async () => {
 
   // 3. Create snapshot file
   writeFileSync(
-    "./snapshot.txt",
-    `
+    "./snapshot.csv",
+    `Address,NbNFTs
 ${Object.keys(uniqueAddresses)
-  .map(
-    (address) =>
-      `(map-set vote-count '${address} u${uniqueAddresses[address].value})`
-  )
+  .map((address) => `${address},${uniqueAddresses[address].value}`)
   .join("\n")}
 `,
     { encoding: "utf8" }
