@@ -22,6 +22,7 @@ export function callReadOnlyFunctionRetry(
   tries: number
 ): any {
   function onError(err: Error) {
+    console.log(err);
     const triesLeft = tries - 1;
     if (!triesLeft) {
       console.log(`Out of retries, failing`);
@@ -34,7 +35,9 @@ export function callReadOnlyFunctionRetry(
       callReadOnlyFunctionRetry(options, delay, triesLeft)
     );
   }
-  return callReadOnlyFunction(options).catch(onError);
+  return callReadOnlyFunction({ network: config.network, ...options }).catch(
+    onError
+  );
 }
 
 export const resolveStxNftOwner = async (
