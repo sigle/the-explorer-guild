@@ -34,7 +34,9 @@ export function callReadOnlyFunctionRetry(
       callReadOnlyFunctionRetry(options, delay, triesLeft)
     );
   }
-  return callReadOnlyFunction(options).catch(onError);
+  return callReadOnlyFunction({ network: config.network, ...options }).catch(
+    onError
+  );
 }
 
 export const resolveStxNftOwner = async (

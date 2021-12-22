@@ -21,13 +21,12 @@ function sliceIntoChunks(arr: any[], chunkSize: number): number[][] {
 }
 
 const run = async () => {
-  const collectionSize = 2503;
   const chunkSize = 15;
-  console.log(`Taking a snapshot of the ${collectionSize} NFTs...`);
+  console.log(`Taking a snapshot of the ${config.collectionSize} NFTs...`);
 
   const stats = { uniqueAddresses: 0, stxNft: 0, stacksArt: 0 };
   const addresses: string[] = [];
-  const arrayHelper = [...Array(collectionSize).keys()];
+  const arrayHelper = [...Array(config.collectionSize).keys()];
   const arrayHelperChunks = sliceIntoChunks(arrayHelper, chunkSize);
 
   // 1. Get all the addresses that own the NFT
