@@ -104,6 +104,7 @@ Clarinet.test({
     ]);
 
     for (let index = 0; index < maxMintNumber; index++) {
+      console.log("Index", index);
       block = chain.mineBlock([
         Tx.contractCall(
           "the-explorer-guild-mint",
