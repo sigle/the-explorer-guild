@@ -103,17 +103,16 @@ Clarinet.test({
       ),
     ]);
 
-    for (let index = 0; index < maxMintNumber; index++) {
-      console.log("Index", index);
+    for (let index = 0; index < maxMintNumber / 10; index++) {
       block = chain.mineBlock([
         Tx.contractCall(
           "the-explorer-guild-mint",
-          "claim",
+          "claim-ten",
           [],
           wallet_1.address
         ),
       ]);
-      block.receipts[0].result.expectOk().expectUint(index + 1);
+      block.receipts[0].result.expectOk().expectBool(true);
     }
 
     block = chain.mineBlock([
