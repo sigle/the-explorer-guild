@@ -1,12 +1,15 @@
 (define-constant contract-owner tx-sender)
 (define-constant err-failed-to-transfer (err u11))
+(define-constant err-no-team-mint-remaining (err u12))
 
-;; TODO throw error if trying to mint more than 497 via mint function
+;; Amount of mint allowed
+(define-data-var team-mint-number uint u497)
 
 ;; Mint up to 497 Explorers in total
 ;; Calling this function will mint 71 NFTs. 71 * 7 = 497
 (define-public (mint)
   (begin
+    (asserts! (> (var-get team-mint-number) u0) err-no-team-mint-remaining)
     ;; Enable the sale so contract can mint
     (try! (contract-call? .the-explorer-guild-mint enable-sale))
     ;; Transfer 71 STX to the contract in order to mint
@@ -19,6 +22,8 @@
     (try! (contract-call? .the-explorer-guild set-mint-price u100000000))
     ;; Disable the sale to not allow new mints
     (try! (contract-call? .the-explorer-guild-mint disable-sale))
+    ;; Reduce mint number
+    (var-set team-mint-number (- (var-get team-mint-number) u71))
     (ok true)))
 
 ;; Claim an NFT and transfer it to the contract owner wallet

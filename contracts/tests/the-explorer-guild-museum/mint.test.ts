@@ -18,6 +18,37 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "[mint] Should throw error if minting more than 493 NFTs",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let wallet_deployer = accounts.get("deployer")!;
+
+    for (let index = 0; index < 7; index++) {
+      let block = chain.mineBlock([
+        Tx.contractCall(
+          "the-explorer-guild-museum",
+          "mint",
+          [],
+          wallet_deployer.address
+        ),
+      ]);
+
+      block.receipts[0].result.expectOk().expectBool(true);
+    }
+
+    let block = chain.mineBlock([
+      Tx.contractCall(
+        "the-explorer-guild-museum",
+        "mint",
+        [],
+        wallet_deployer.address
+      ),
+    ]);
+
+    block.receipts[0].result.expectErr().expectUint(12);
+  },
+});
+
+Clarinet.test({
   name: "[mint] Should mint 71 NFTs to the deployer wallet",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let numberToMint = 71;

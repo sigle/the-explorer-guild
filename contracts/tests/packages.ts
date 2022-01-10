@@ -7,8 +7,8 @@ export {
   Tx,
   Chain,
   types,
-} from "https://deno.land/x/clarinet@v0.19.1/index.ts";
-export type { Account } from "https://deno.land/x/clarinet@v0.19.1/index.ts";
+} from "https://deno.land/x/clarinet@v0.23.0/index.ts";
+export type { Account } from "https://deno.land/x/clarinet@v0.23.0/index.ts";
 export {
   assert,
   assertEquals,
