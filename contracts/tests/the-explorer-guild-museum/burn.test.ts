@@ -18,7 +18,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "[burn] Should mint 350 NFTs to the contract wallet",
+  name: "[burn] Should mint 500 NFTs to the contract wallet",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let wallet_deployer = accounts.get("deployer")!;
 
@@ -38,7 +38,7 @@ Clarinet.test({
       assetMaps.assets[".the-explorer-guild.The-Explorer-Guild"][
         `${wallet_deployer.address}.the-explorer-guild-museum`
       ],
-      350
+      500
     );
   },
 });
