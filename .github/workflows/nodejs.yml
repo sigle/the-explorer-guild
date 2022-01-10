@@ -17,17 +17,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install clarinet
-        run: |
-          wget -L https://github.com/hirosystems/clarinet/releases/download/v0.22.0/clarinet-linux-x64.tar.gz
-          tar xzf clarinet-linux-x64.tar.gz
-          chmod +x ./clarinet
-          mkdir -p "$HOME/.local/bin"
-          mv ./clarinet "$HOME/.local/bin"
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Test contracts
-        run: clarinet test
+      - name: "Test contracts"
+        uses: docker://hirosystems/clarinet:0.23.0
+        with:
+          args: test --manifest-path=contracts/Clarinet.toml
 
   test-wallet-snapshot:
     runs-on: ubuntu-20.04
