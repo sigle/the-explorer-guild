@@ -46,6 +46,6 @@ After the sale is over, and all the NFTs are minted, we will upload all the meta
 
 - Vote contract: [SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173.the-explorer-guild-vote](https://explorer.stacks.co/txid/SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173.the-explorer-guild-vote?chain=mainnet)
 
-[An on-chain vote](https://app.sigle.io/sigleapp.id.blockstack/OSb5KPH8g1Ms-6vU7x1fe) to decide the faith of the remaining explorers happened and resulted in the decision of [burning 7000 pieces](https://app.sigle.io/sigleapp.id.blockstack/BrdkUDZCvbbFoFHGx1DNu).
+[An on-chain vote](https://app.sigle.io/sigleapp.id.blockstack/OSb5KPH8g1Ms-6vU7x1fe) to decide the destiny of the remaining explorers happened and resulted in the decision of [burning 7000 pieces](https://app.sigle.io/sigleapp.id.blockstack/BrdkUDZCvbbFoFHGx1DNu).
 
 The 7000 explorers will be owned by the museum contract and can't be transferred to anyone.
