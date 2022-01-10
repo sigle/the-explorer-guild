@@ -9,6 +9,7 @@ on:
 jobs:
   test-contracts:
     runs-on: ubuntu-20.04
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: contracts
