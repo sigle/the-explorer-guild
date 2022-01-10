@@ -172,7 +172,6 @@
 )
 ;; Code for uint to string - END
 
-;; TODO move it to other mint contract?
 ;; Generate a random number using VRF between 0 and X
 ;; Code to generate random number - START
 (define-map chosen-ids uint uint)
