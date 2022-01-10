@@ -19,7 +19,7 @@ jobs:
       - name: "Test contracts"
         uses: docker://hirosystems/clarinet:0.23.0
         with:
-          args: test --manifest-path=./Clarinet.toml
+          args: test --manifest-path=.contracts/Clarinet.toml
 
   test-wallet-snapshot:
     runs-on: ubuntu-20.04
