@@ -15,9 +15,7 @@ This mono-repository contains the Stacks Smart Contracts written in Clarity, as 
 - Contract address: [SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173](https://explorer.stacks.co/address/SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173?chain=mainnet)
 - Provenance hash: [2f2df159abd91a57b342593537af944d8480039467ef8c31fe5871625c3b8e13](https://explorer.stacks.co/txid/0xd4a3a4cb16f4cbe2e2b00862bc7dc7244903787f9a91e49d09e1ff520a1f987e?chain=mainnet)
 
-## How the release will work
-
-The release will be done in 2 steps:
+## Release
 
 - premint - November 1st
 - public sale and reveal - November 3nd
@@ -43,3 +41,11 @@ _Code of the server will be open-sourced soon._
 ### Meta data stored on Arweave
 
 After the sale is over, and all the NFTs are minted, we will upload all the metadata to [Arweave](https://www.arweave.org/), call the `set-base-token-uri` with the Arweave transaction id in this format: `ar://<arweave-id>`. After checking that everything is working properly, we will call the `freeze-metadata` function which will lock the metadata base url and prove that it can't be changed anymore. This means no more centralised server anymore. And to check that the metadata was not changed in between, you will be able to use the provenance hash provided before.
+
+## Burned explorers
+
+- Vote contract: [SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173.the-explorer-guild-vote](https://explorer.stacks.co/txid/SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173.the-explorer-guild-vote?chain=mainnet)
+
+[An on-chain vote](https://app.sigle.io/sigleapp.id.blockstack/OSb5KPH8g1Ms-6vU7x1fe) to decide the faith of the remaining explorers happened and resulted in the decision of [burning 7000 pieces](https://app.sigle.io/sigleapp.id.blockstack/BrdkUDZCvbbFoFHGx1DNu).
+
+The 7000 explorers will be owned by the contract and can't be transferred to anyone else.
