@@ -91,6 +91,7 @@ Clarinet.test({
       amount.expectInt(1);
 
       // 2.2. Check that 1 NFT was minted into the museum contract wallet
+      // because contract owner can mint because mint fees can't be transferred.
       let {
         asset_identifier,
         recipient: recipientMintEvent,
