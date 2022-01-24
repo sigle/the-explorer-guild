@@ -14,8 +14,8 @@ depends_on = ["the-explorer-guild"]
 path = "contracts/the-explorer-guild-vote.clar"
 depends_on = []
 
-[contracts.the-explorer-guild-museum]
-path = "contracts/the-explorer-guild-museum.clar"
+[contracts.the-explorer-guild-burn]
+path = "contracts/the-explorer-guild-burn.clar"
 depends_on = ["the-explorer-guild-mint", "the-explorer-guild"]
 
 [contracts.nft-trait]

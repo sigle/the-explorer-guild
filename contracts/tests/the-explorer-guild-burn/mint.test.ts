@@ -5,12 +5,7 @@ Clarinet.test({
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let wallet_1 = accounts.get("wallet_1")!;
     let block = chain.mineBlock([
-      Tx.contractCall(
-        "the-explorer-guild-museum",
-        "mint",
-        [],
-        wallet_1.address
-      ),
+      Tx.contractCall("the-explorer-guild-burn", "mint", [], wallet_1.address),
     ]);
 
     block.receipts[0].result.expectErr().expectUint(403);
@@ -25,7 +20,7 @@ Clarinet.test({
     for (let index = 0; index < 7; index++) {
       let block = chain.mineBlock([
         Tx.contractCall(
-          "the-explorer-guild-museum",
+          "the-explorer-guild-burn",
           "mint",
           [],
           wallet_deployer.address
@@ -37,7 +32,7 @@ Clarinet.test({
 
     let block = chain.mineBlock([
       Tx.contractCall(
-        "the-explorer-guild-museum",
+        "the-explorer-guild-burn",
         "mint",
         [],
         wallet_deployer.address
@@ -56,7 +51,7 @@ Clarinet.test({
 
     let block = chain.mineBlock([
       Tx.contractCall(
-        "the-explorer-guild-museum",
+        "the-explorer-guild-burn",
         "mint",
         [],
         wallet_deployer.address
@@ -73,7 +68,7 @@ Clarinet.test({
       wallet_deployer.address
     );
     events[0].stx_transfer_event.recipient.expectPrincipal(
-      `${wallet_deployer.address}.the-explorer-guild-museum`
+      `${wallet_deployer.address}.the-explorer-guild-burn`
     );
     events[0].stx_transfer_event.amount.expectInt(71);
 
@@ -85,7 +80,7 @@ Clarinet.test({
       let { sender, recipient, amount } =
         events[baseIndex + 1].stx_transfer_event;
       sender.expectPrincipal(
-        `${wallet_deployer.address}.the-explorer-guild-museum`
+        `${wallet_deployer.address}.the-explorer-guild-burn`
       );
       recipient.expectPrincipal(wallet_deployer.address);
       amount.expectInt(1);
@@ -101,7 +96,7 @@ Clarinet.test({
         `${wallet_deployer.address}.the-explorer-guild::The-Explorer-Guild`
       );
       recipientMintEvent.expectPrincipal(
-        `${wallet_deployer.address}.the-explorer-guild-museum`
+        `${wallet_deployer.address}.the-explorer-guild-burn`
       );
       value.expectUint(index + 1);
 
@@ -112,7 +107,7 @@ Clarinet.test({
         `${wallet_deployer.address}.the-explorer-guild::The-Explorer-Guild`
       );
       sender.expectPrincipal(
-        `${wallet_deployer.address}.the-explorer-guild-museum`
+        `${wallet_deployer.address}.the-explorer-guild-burn`
       );
       recipient.expectPrincipal(wallet_deployer.address);
       value.expectUint(index + 1);
@@ -120,7 +115,7 @@ Clarinet.test({
 
     assertEquals(
       assetMaps.assets[".the-explorer-guild.The-Explorer-Guild"][
-        `${wallet_deployer.address}.the-explorer-guild-museum`
+        `${wallet_deployer.address}.the-explorer-guild-burn`
       ],
       0
     );
