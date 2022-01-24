@@ -18,7 +18,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "[burn] Should mint 500 NFTs to the contract wallet",
+  name: "[burn] Should mint and transfer 500 NFTs to the museum contract",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let wallet_deployer = accounts.get("deployer")!;
 
@@ -40,5 +40,49 @@ Clarinet.test({
       ],
       500
     );
+  },
+});
+
+Clarinet.test({
+  name: "[burn] Should burn only 10000 NFTs to the contract wallet while paying 500 STX per call",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let wallet_deployer = accounts.get("deployer")!;
+    // call 1 times more then mints possible
+    const index = [...new Array(21).keys()];
+
+    let block = chain.mineBlock(
+      index.map(() =>
+        Tx.contractCall(
+          "the-explorer-guild-museum",
+          "burn",
+          [],
+          wallet_deployer.address
+        )
+      )
+    );
+
+    index.map((i) => block.receipts[i].result.expectOk().expectBool(true));
+    index.map((i) => {
+      let events = block.receipts[i].events;
+      // 500 STXs are always transferred to the museum contract
+      events.expectSTXTransferEvent(
+        500,
+        wallet_deployer.address,
+        `${wallet_deployer.address}.the-explorer-guild-museum`
+      );
+
+      if (i < 20) {
+        // at least 1 stx is transferred back per NFT (500 STX in total)
+        events.expectSTXTransferEvent(
+          1,
+          `${wallet_deployer.address}.the-explorer-guild-museum`,
+          wallet_deployer.address
+        );
+      } else {
+        // no nfts are minted if count > 10000
+        events.length.toString().expectInt(1);
+      }
+      return true;
+    });
   },
 });
