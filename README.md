@@ -6,7 +6,7 @@
 
 </div>
 
-10 000 NFT unique and randomly generated NFTs on the Stacks blockchain. Hand drawn and inspired by the famous writer [Jules Verne](https://en.wikipedia.org/wiki/Jules_Verne). To learn more about the project you can check out the website https://www.explorerguild.io or [join our discord](https://discord.gg/X2Dbz3xbrs).
+3 000 NFT unique and randomly generated NFTs on the Stacks blockchain. Hand drawn and inspired by the famous writer [Jules Verne](https://en.wikipedia.org/wiki/Jules_Verne). To learn more about the project you can check out the website https://www.explorerguild.io or [join our discord](https://discord.gg/X2Dbz3xbrs).
 
 This mono-repository contains the Stacks Smart Contracts written in Clarity, as well as the server code used to serve the metadata. You can find more information in the sub folders readme.
 
