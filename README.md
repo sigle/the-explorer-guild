@@ -14,6 +14,7 @@ This mono-repository contains the Stacks Smart Contracts written in Clarity, as 
 
 - Contract address: [SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173](https://explorer.stacks.co/address/SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173?chain=mainnet)
 - Provenance hash: [2f2df159abd91a57b342593537af944d8480039467ef8c31fe5871625c3b8e13](https://explorer.stacks.co/txid/0xd4a3a4cb16f4cbe2e2b00862bc7dc7244903787f9a91e49d09e1ff520a1f987e?chain=mainnet)
+- Burn contract: [SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173.the-explorer-guild-burn](https://explorer.stacks.co/txid/SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173.the-explorer-guild-burn?chain=mainnet)
 
 ## Release
 
@@ -48,4 +49,4 @@ After the sale is over, and all the NFTs are minted, we will upload all the meta
 
 [An on-chain vote](https://app.sigle.io/sigleapp.id.blockstack/OSb5KPH8g1Ms-6vU7x1fe) to decide the destiny of the remaining explorers happened and resulted in the decision of [burning 7000 pieces](https://app.sigle.io/sigleapp.id.blockstack/BrdkUDZCvbbFoFHGx1DNu).
 
-The 7000 explorers will be owned by the museum contract and can't be transferred to anyone.
+The 7000 explorers are owned by the [burn contract](https://explorer.stacks.co/txid/SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173.the-explorer-guild-burn?chain=mainnet) and can't be transferred to anyone.
