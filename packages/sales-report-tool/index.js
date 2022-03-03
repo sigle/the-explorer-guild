@@ -38,9 +38,7 @@ const getAccounting = async () => {
     )
       .then((response) => response.json())
       .then((data) => {
-        data.results &&
-          data.results.length > 0 &&
-          data.results.map((txn) => {
+        data?.results?.map((txn) => {
             if (
               txn.sender_address !== address &&
               txn.tx_type === "contract_call" &&
