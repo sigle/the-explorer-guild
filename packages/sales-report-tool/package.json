@@ -2,10 +2,11 @@
   "name": "sales-report-tool",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "private": true,
   "scripts": {
-    "run": "node index.js"
+    "run": "ts-node index.ts",
+    "build": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,11 @@
     "url": "https://github.com/sigle/the-explorer-guild/issues"
   },
   "dependencies": {
-    "cross-fetch": "^3.1.5",
-    "fast-csv": "^4.3.6"
+    "undici": "4.14.1"
+  },
+  "devDependencies": {
+    "@types/node": "16.11.12",
+    "ts-node": "10.4.0",
+    "typescript": "4.5.2"
   }
 }
