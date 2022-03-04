@@ -31,7 +31,6 @@ const getAccounting = async () => {
   )
     .then((response: any) => response.json())
     .then((data: ResponseFromTransactionRequest) => {
-      console.log("DATA", data);
       total = data.total;
     });
   let indexOfLastTxn = total;
