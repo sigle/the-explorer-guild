@@ -1,4 +1,9 @@
-import { getFormattedDate, getAmountOfNFTs } from "./utils";
+import {
+  getFormattedDate,
+  getAmountOfNFTs,
+  TransactionFromAPI,
+  ResponseFromTransactionRequest,
+} from "./utils";
 import { writeFileSync } from "fs";
 import { fetch } from "undici";
 
@@ -25,7 +30,8 @@ const getAccounting = async () => {
     `https://stacks-node-api.mainnet.stacks.co/extended/v1/address/${address}/transactions`
   )
     .then((response: any) => response.json())
-    .then((data: any) => {
+    .then((data: ResponseFromTransactionRequest) => {
+      console.log("DATA", data);
       total = data.total;
     });
   let indexOfLastTxn = total;
@@ -39,7 +45,7 @@ const getAccounting = async () => {
       }`
     )
       .then((response: any) => response.json())
-      .then((data: any) => {
+      .then((data: ResponseFromTransactionRequest) => {
         data?.results?.forEach((txn: any) => {
           if (
             txn.sender_address !== address &&
