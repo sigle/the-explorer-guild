@@ -25,13 +25,16 @@ const run = async () => {
     txId: string;
     nftId: number;
     amountSTX: number;
+    amountEUR: number;
     STXprice: number;
   }[] = [];
 
-  // TODO figure out blocks for the month
-
+  /**
+   * Get the full list of transactions for the secondary sale address.
+   */
   const transactions = await accountsApi.getAccountTransactions({
     principal: config.secondarySalesAddress,
+    limit: 50,
   });
   for (const tx of transactions.results) {
     // Used to infer the correct type
@@ -58,9 +61,14 @@ const run = async () => {
           event.asset.asset_id === config.nftName
       );
       if (secondarySaleEvent && nftSaleEvent) {
+        const amountSTX =
+          secondarySaleEvent.event_type === "stx_asset"
+            ? microToStacks(Number(secondarySaleEvent.asset.amount))
+            : 0;
         const STXprice = await getSTXPrice(date);
         // Round to 2 decimals
         const STXpriceRounded = Math.floor(STXprice * 100) / 100;
+        const EURpriceRounded = Math.floor(STXprice * amountSTX * 100) / 100;
 
         results.push({
           date,
@@ -69,10 +77,8 @@ const run = async () => {
             nftSaleEvent.event_type === "non_fungible_token_asset"
               ? Number(nftSaleEvent.asset.value.repr.replace("u", ""))
               : 0,
-          amountSTX:
-            secondarySaleEvent.event_type === "stx_asset"
-              ? microToStacks(Number(secondarySaleEvent.asset.amount))
-              : 0,
+          amountSTX,
+          amountEUR: EURpriceRounded,
           STXprice: STXpriceRounded,
         });
       }
@@ -92,13 +98,13 @@ const run = async () => {
     console.log(`About to insert ${results.length} rows`);
     writeFileSync(
       `./${config.filename}`,
-      `Date,Transaction id,NFT id,STX received, STX price in EUR
-${results
-  .map(
-    (txn) =>
-      `${txn.date},${txn.txId},${txn.nftId},${txn.amountSTX},${txn.STXprice}`
-  )
-  .join("\n")}
+      `Date,Transaction id,NFT id,STX received, STX received in EUR,1 STX in EUR
+      ${results
+        .map(
+          (txn) =>
+            `${txn.date},${txn.txId},${txn.nftId},${txn.amountSTX},${txn.amountEUR},${txn.STXprice}`
+        )
+        .join("\n")}
     `,
       { encoding: "utf8" }
     );
