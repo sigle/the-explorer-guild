@@ -28,19 +28,32 @@ const run = async () => {
     amountEUR: number;
     STXprice: number;
   }[] = [];
+  const transactions: Transaction[] = [];
 
   /**
    * Get the full list of transactions for the secondary sale address.
    */
-  const transactions = await accountsApi.getAccountTransactions({
-    principal: config.secondarySalesAddress,
-    limit: 50,
-  });
-  for (const tx of transactions.results) {
-    // Used to infer the correct type
-    const transaction = tx as Transaction;
+  let offset = 0;
+  const limit = 50;
+  while (true) {
+    const transactionsResults = await accountsApi.getAccountTransactions({
+      principal: config.secondarySalesAddress,
+      limit,
+      offset,
+    });
+    if (transactionsResults.results.length < limit) {
+      break;
+    }
+    transactions.push(...(transactionsResults.results as Transaction[]));
+    offset += limit;
+  }
+
+  console.log(`Starting to process ${transactions.length} transactions`);
+
+  let index = 0;
+  for (const transaction of transactions) {
     const date = format(transaction.burn_block_time * 1000, "dd-MM-yyyy");
-    console.log(`${date}: processing tx ${transaction.tx_id}`);
+    console.log(`#${index} - ${date}: processing tx ${transaction.tx_id}`);
 
     const detailedTransaction = (await transactionsApi.getTransactionById({
       txId: transaction.tx_id,
@@ -91,7 +104,8 @@ const run = async () => {
      * To avoid hitting the coingecko API rate limit,
      * we sleep between transactions.
      */
-    await sleep(1000);
+    await sleep(500);
+    index++;
   }
 
   if (results.length > 0) {
