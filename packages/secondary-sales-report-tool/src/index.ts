@@ -93,12 +93,12 @@ const run = async () => {
     writeFileSync(
       `./${config.filename}`,
       `Date,Transaction id,NFT id,STX received, STX price in EUR
-    ${results
-      .map(
-        (txn) =>
-          `${txn.date},${txn.txId},${txn.nftId},${txn.amountSTX},${txn.STXprice}`
-      )
-      .join("\n")}
+${results
+  .map(
+    (txn) =>
+      `${txn.date},${txn.txId},${txn.nftId},${txn.amountSTX},${txn.STXprice}`
+  )
+  .join("\n")}
     `,
       { encoding: "utf8" }
     );
