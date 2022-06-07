@@ -5,7 +5,9 @@
     "run": "ts-node src/index.ts",
     "build": "tsc --noEmit"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@stacks/blockchain-api-client": "4.0.1"
+  },
   "devDependencies": {
     "@types/node": "16.11.12",
     "ts-node": "10.4.0",
