@@ -1,4 +1,4 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 importers:
 
@@ -22,7 +22,7 @@ importers:
       undici: 4.14.1
     devDependencies:
       '@types/node': 16.11.12
-      ts-node: 10.4.0_d1ba71cee4528a43e185cc3d6fa907dc
+      ts-node: 10.4.0_2g5hdtxekkfehymfzq6w7kih3q
       typescript: 4.5.2
 
   packages/wallet-snapshot:
@@ -37,7 +37,7 @@ importers:
       '@stacks/transactions': 3.0.0
     devDependencies:
       '@types/node': 16.11.12
-      ts-node: 10.4.0_d1ba71cee4528a43e185cc3d6fa907dc
+      ts-node: 10.4.0_2g5hdtxekkfehymfzq6w7kih3q
       typescript: 4.5.2
 
 packages:
@@ -772,7 +772,7 @@ packages:
     resolution: {integrity: sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=}
     dev: false
 
-  /ts-node/10.4.0_d1ba71cee4528a43e185cc3d6fa907dc:
+  /ts-node/10.4.0_2g5hdtxekkfehymfzq6w7kih3q:
     resolution: {integrity: sha512-g0FlPvvCXSIO1JDF6S232P5jPYqBkRL9qly81ZgAOSU7rwI0stphCgd2kLiCrU9DjQCrJMWEqcNSjQL02s6d8A==}
     hasBin: true
     peerDependencies:
