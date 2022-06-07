@@ -6,7 +6,10 @@
     "build": "tsc --noEmit"
   },
   "dependencies": {
-    "@stacks/blockchain-api-client": "4.0.1"
+    "@stacks/blockchain-api-client": "4.0.1",
+    "@stacks/stacks-blockchain-api-types": "4.0.1",
+    "date-fns": "2.28.0",
+    "undici": "5.4.0"
   },
   "devDependencies": {
     "@types/node": "16.11.12",
