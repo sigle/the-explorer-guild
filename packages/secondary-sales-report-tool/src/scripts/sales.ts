@@ -6,10 +6,10 @@ import {
 import type { Transaction } from "@stacks/stacks-blockchain-api-types";
 import { fetch } from "undici";
 import { format } from "date-fns";
-import { config } from "./config";
+import { config } from "../config";
 import { writeFileSync } from "fs";
-import { microToStacks } from "./utils";
-import { getSTXPrice } from "./coingecko";
+import { microToStacks } from "../utils";
+import { getSTXPrice } from "../coingecko";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -23,7 +23,6 @@ const run = async () => {
   const results: {
     date: string;
     txId: string;
-    nftId: number;
     amountSTX: number;
     amountEUR: number;
     STXprice: number;
@@ -31,13 +30,13 @@ const run = async () => {
   const transactions: Transaction[] = [];
 
   /**
-   * Get the full list of transactions for the secondary sale address.
+   * Get the full list of transactions for the sale address.
    */
   let offset = 0;
   const limit = 50;
   while (true) {
     const transactionsResults = await accountsApi.getAccountTransactions({
-      principal: config.secondarySalesAddress,
+      principal: config.salesAddress,
       limit,
       offset,
     });
@@ -59,42 +58,41 @@ const run = async () => {
       txId: transaction.tx_id,
     })) as Transaction;
 
-    // We only report smart contracts calls
-    if (detailedTransaction.tx_type === "contract_call") {
-      const secondarySaleEvent = detailedTransaction.events.find(
-        (event) =>
-          event.event_type === "stx_asset" &&
-          event.asset.asset_event_type === "transfer" &&
-          event.asset.recipient === config.secondarySalesAddress
-      );
-      const nftSaleEvent = detailedTransaction.events.find(
-        (event) =>
-          event.event_type === "non_fungible_token_asset" &&
-          event.asset.asset_event_type === "transfer" &&
-          event.asset.asset_id === config.nftName
-      );
-      if (secondarySaleEvent && nftSaleEvent) {
-        const amountSTX =
-          secondarySaleEvent.event_type === "stx_asset"
-            ? microToStacks(Number(secondarySaleEvent.asset.amount))
-            : 0;
-        const STXprice = await getSTXPrice(date);
-        // Round to 2 decimals
-        const STXpriceRounded = Math.floor(STXprice * 100) / 100;
-        const EURpriceRounded = Math.floor(STXprice * amountSTX * 100) / 100;
+    // We only report smart contracts calls of mint events.
+    if (
+      detailedTransaction.tx_type === "contract_call" &&
+      detailedTransaction.contract_call.contract_id ===
+        "SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173.the-explorer-guild-mint" &&
+      detailedTransaction.contract_call.function_name.startsWith("claim")
+    ) {
+      const amountSTX = detailedTransaction.events
+        .filter(
+          (event) =>
+            event.event_type === "stx_asset" &&
+            event.asset.asset_event_type === "transfer" &&
+            event.asset.recipient === config.salesAddress
+        )
+        .reduce(
+          (acc, event) =>
+            acc +
+            (event.event_type === "stx_asset"
+              ? microToStacks(Number(event.asset.amount))
+              : 0),
+          0
+        );
 
-        results.push({
-          date,
-          txId: detailedTransaction.tx_id,
-          nftId:
-            nftSaleEvent.event_type === "non_fungible_token_asset"
-              ? Number(nftSaleEvent.asset.value.repr.replace("u", ""))
-              : 0,
-          amountSTX,
-          amountEUR: EURpriceRounded,
-          STXprice: STXpriceRounded,
-        });
-      }
+      const STXprice = await getSTXPrice(date);
+      // Round to 2 decimals
+      const STXpriceRounded = Math.floor(STXprice * 100) / 100;
+      const EURpriceRounded = Math.floor(STXprice * amountSTX * 100) / 100;
+
+      results.push({
+        date,
+        txId: detailedTransaction.tx_id,
+        amountSTX,
+        amountEUR: EURpriceRounded,
+        STXprice: STXpriceRounded,
+      });
     }
 
     // console.log(JSON.stringify(transaction, null, 2));
@@ -111,19 +109,19 @@ const run = async () => {
   if (results.length > 0) {
     console.log(`About to insert ${results.length} rows`);
     writeFileSync(
-      `./${config.secondarySalesFilename}`,
-      `Date,Transaction id,NFT id,STX received, STX received in EUR,1 STX in EUR
+      `./${config.salesFilename}`,
+      `Date,Transaction id,STX received, STX received in EUR,1 STX in EUR
       ${results
         .map(
           (txn) =>
-            `${txn.date},${txn.txId},${txn.nftId},${txn.amountSTX},${txn.amountEUR},${txn.STXprice}`
+            `${txn.date},${txn.txId},${txn.amountSTX},${txn.amountEUR},${txn.STXprice}`
         )
         .join("\n")}
     `,
       { encoding: "utf8" }
     );
 
-    console.log(`Created file ${config.secondarySalesFilename}`);
+    console.log(`Created file ${config.salesFilename}`);
   }
 };
 

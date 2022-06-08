@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "run": "ts-node src/index.ts",
+    "run-sales": "ts-node src/scripts/sales.ts",
     "build": "tsc --noEmit"
   },
   "dependencies": {
