@@ -6,42 +6,12 @@ import type {
 import { format, isAfter, isBefore } from "date-fns";
 import { config } from "../config";
 import { writeFileSync } from "fs";
-import { microToStacks } from "../utils";
+import { isSaleTransaction, microToStacks } from "../utils";
 import { getSTXPrice } from "../coingecko";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-const isSale = (transaction: Transaction) => {
-  return (
-    // Gamma
-    (transaction.tx_type === "contract_call" &&
-      transaction.contract_call.contract_id ===
-        "SPNWZ5V2TPWGQGVDR6T7B6RQ4XMGZ4PXTEE0VQ0S.marketplace-v4" &&
-      transaction.contract_call.function_name === "purchase-asset") ||
-    // Tradeport v5
-    (transaction.tx_type === "contract_call" &&
-      transaction.contract_call.contract_id ===
-        "SP2KAF9RF86PVX3NEE27DFV1CQX0T4WGR41X3S45C.byzantion-market-v5" &&
-      transaction.contract_call.function_name === "buy-item") ||
-    // Tradeport v6
-    (transaction.tx_type === "contract_call" &&
-      transaction.contract_call.contract_id ===
-        "SP1BX0P4MZ5A3A5JCH0E10YNS170QFR2VQ6TT4NRH.byzantion-market-v6" &&
-      transaction.contract_call.function_name === "buy-item") ||
-    // Tradeport v7
-    (transaction.tx_type === "contract_call" &&
-      transaction.contract_call.contract_id ===
-        "SP1BX0P4MZ5A3A5JCH0E10YNS170QFR2VQ6TT4NRH.byzantion-market-v7" &&
-      transaction.contract_call.function_name === "buy-item") ||
-    // StacksArt
-    (transaction.tx_type === "contract_call" &&
-      transaction.contract_call.contract_id ===
-        "SPJW1XE278YMCEYMXB8ZFGJMH8ZVAAEDP2S2PJYG.stacks-art-market-v2" &&
-      transaction.contract_call.function_name === "buy-item")
-  );
-};
 
 const run = async () => {
   const accountsApi = new AccountsApi();
@@ -107,7 +77,7 @@ const run = async () => {
     })) as Transaction;
 
     // We only report smart contracts calls of sales events.
-    if (isSale(detailedTransaction)) {
+    if (isSaleTransaction(detailedTransaction)) {
       const eventSTX = detailedTransaction.events.find(
         (event) =>
           event.event_type === "stx_asset" &&
