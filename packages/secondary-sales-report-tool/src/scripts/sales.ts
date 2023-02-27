@@ -1,11 +1,9 @@
-import {
-  AccountsApi,
-  Configuration,
-  TransactionsApi,
-} from "@stacks/blockchain-api-client";
-import type { Transaction } from "@stacks/stacks-blockchain-api-types";
-import { fetch } from "undici";
-import { format } from "date-fns";
+import { AccountsApi, TransactionsApi } from "@stacks/blockchain-api-client";
+import type {
+  Transaction,
+  TransactionEventStxAsset,
+} from "@stacks/stacks-blockchain-api-types";
+import { format, isAfter, isBefore } from "date-fns";
 import { config } from "../config";
 import { writeFileSync } from "fs";
 import { microToStacks } from "../utils";
@@ -15,10 +13,42 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+const isSale = (transaction: Transaction) => {
+  return (
+    // Gamma
+    (transaction.tx_type === "contract_call" &&
+      transaction.contract_call.contract_id ===
+        "SPNWZ5V2TPWGQGVDR6T7B6RQ4XMGZ4PXTEE0VQ0S.marketplace-v4" &&
+      transaction.contract_call.function_name === "purchase-asset") ||
+    // Tradeport v5
+    (transaction.tx_type === "contract_call" &&
+      transaction.contract_call.contract_id ===
+        "SP2KAF9RF86PVX3NEE27DFV1CQX0T4WGR41X3S45C.byzantion-market-v5" &&
+      transaction.contract_call.function_name === "buy-item") ||
+    // Tradeport v6
+    (transaction.tx_type === "contract_call" &&
+      transaction.contract_call.contract_id ===
+        "SP1BX0P4MZ5A3A5JCH0E10YNS170QFR2VQ6TT4NRH.byzantion-market-v6" &&
+      transaction.contract_call.function_name === "buy-item") ||
+    // Tradeport v7
+    (transaction.tx_type === "contract_call" &&
+      transaction.contract_call.contract_id ===
+        "SP1BX0P4MZ5A3A5JCH0E10YNS170QFR2VQ6TT4NRH.byzantion-market-v7" &&
+      transaction.contract_call.function_name === "buy-item") ||
+    // StacksArt
+    (transaction.tx_type === "contract_call" &&
+      transaction.contract_call.contract_id ===
+        "SPJW1XE278YMCEYMXB8ZFGJMH8ZVAAEDP2S2PJYG.stacks-art-market-v2" &&
+      transaction.contract_call.function_name === "buy-item")
+  );
+};
+
 const run = async () => {
-  const configuration = new Configuration({ fetchApi: fetch });
-  const accountsApi = new AccountsApi(configuration);
-  const transactionsApi = new TransactionsApi(configuration);
+  const accountsApi = new AccountsApi();
+  const transactionsApi = new TransactionsApi();
+
+  const startDate = new Date("2023-02-01");
+  const endDate = new Date("2023-02-28");
 
   const results: {
     date: string;
@@ -31,19 +61,37 @@ const run = async () => {
 
   /**
    * Get the full list of transactions for the sale address.
+   * Based on the startDate and endDate, we can filter the transactions.
    */
   let offset = 0;
   const limit = 50;
   while (true) {
     const transactionsResults = await accountsApi.getAccountTransactions({
-      principal: config.salesAddress,
+      principal: config.secondarySalesAddress,
       limit,
       offset,
     });
+    // If we get less transactions than the limit, we reached the end.
     if (transactionsResults.results.length < limit) {
       break;
     }
-    transactions.push(...(transactionsResults.results as Transaction[]));
+    for (const transaction of transactionsResults.results as Transaction[]) {
+      const transactionDate = new Date(transaction.burn_block_time * 1000);
+      const isWithinDateRange =
+        isAfter(transactionDate, startDate) &&
+        isBefore(transactionDate, endDate);
+      if (isWithinDateRange) {
+        transactions.push(transaction);
+      }
+    }
+    // If one of the transaction is before the startDate, we can stop.
+    if (
+      (transactionsResults.results as Transaction[]).some((transaction) =>
+        isBefore(new Date(transaction.burn_block_time * 1000), startDate)
+      )
+    ) {
+      break;
+    }
     offset += limit;
   }
 
@@ -58,45 +106,33 @@ const run = async () => {
       txId: transaction.tx_id,
     })) as Transaction;
 
-    // We only report smart contracts calls of mint events.
-    if (
-      detailedTransaction.tx_type === "contract_call" &&
-      detailedTransaction.contract_call.contract_id ===
-        "SP2X0TZ59D5SZ8ACQ6YMCHHNR2ZN51Z32E2CJ173.the-explorer-guild-mint" &&
-      detailedTransaction.contract_call.function_name.startsWith("claim")
-    ) {
-      const amountSTX = detailedTransaction.events
-        .filter(
-          (event) =>
-            event.event_type === "stx_asset" &&
-            event.asset.asset_event_type === "transfer" &&
-            event.asset.recipient === config.salesAddress
-        )
-        .reduce(
-          (acc, event) =>
-            acc +
-            (event.event_type === "stx_asset"
-              ? microToStacks(Number(event.asset.amount))
-              : 0),
-          0
-        );
+    // We only report smart contracts calls of sales events.
+    if (isSale(detailedTransaction)) {
+      const eventSTX = detailedTransaction.events.find(
+        (event) =>
+          event.event_type === "stx_asset" &&
+          event.asset.recipient === config.secondarySalesAddress
+      ) as TransactionEventStxAsset;
+      const royaltyAmountInSTX = microToStacks(eventSTX.asset.amount!);
 
       const STXprice = await getSTXPrice(date);
-      // Round to 2 decimals
+
       const STXpriceRounded = Math.floor(STXprice * 100) / 100;
-      const EURpriceRounded = Math.floor(STXprice * amountSTX * 100) / 100;
+      const EURpriceRounded =
+        Math.floor(STXprice * royaltyAmountInSTX * 100) / 100;
 
       results.push({
         date,
         txId: detailedTransaction.tx_id,
-        amountSTX,
+        amountSTX: royaltyAmountInSTX,
         amountEUR: EURpriceRounded,
         STXprice: STXpriceRounded,
       });
+    } else {
+      console.log(
+        `Skipping ${detailedTransaction.tx_id} - ${detailedTransaction.tx_type}`
+      );
     }
-
-    // console.log(JSON.stringify(transaction, null, 2));
-    // console.log(JSON.stringify(detailedTransaction, null, 2));
 
     /**
      * To avoid hitting the coingecko API rate limit,
@@ -107,22 +143,26 @@ const run = async () => {
   }
 
   if (results.length > 0) {
-    console.log(`About to insert ${results.length} rows`);
     writeFileSync(
       `./${config.salesFilename}`,
       `Date,Transaction id,STX received, STX received in EUR,1 STX in EUR
-      ${results
-        .map(
-          (txn) =>
-            `${txn.date},${txn.txId},${txn.amountSTX},${txn.amountEUR},${txn.STXprice}`
-        )
-        .join("\n")}
+${results
+  .map(
+    (txn) =>
+      `${txn.date},${txn.txId},${txn.amountSTX},${txn.amountEUR},${txn.STXprice}`
+  )
+  .join("\n")}
     `,
       { encoding: "utf8" }
     );
 
-    console.log(`Created file ${config.salesFilename}`);
+    console.log(`Created file ${config.salesFilename}:`);
+    console.log(`- ${results.length} transactions`);
+    console.log(`- Total STX: ${results.reduce((a, b) => a + b.amountSTX, 0)}`);
   }
 };
 
-run();
+run().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

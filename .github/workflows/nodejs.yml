@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        node-version: [16]
+        node-version: [18]
     defaults:
       run:
         working-directory: packages/wallet-snapshot
@@ -36,7 +36,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 7.1
+          version: 7.9
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        node-version: [16]
+        node-version: [18]
     defaults:
       run:
         working-directory: packages/secondary-sales-report-tool
@@ -64,7 +64,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 7.1
+          version: 7.9
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
