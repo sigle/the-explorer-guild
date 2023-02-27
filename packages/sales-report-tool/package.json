@@ -2,7 +2,7 @@
   "name": "sales-report-tool",
   "private": true,
   "scripts": {
-    "run-secondary": "ts-node src/scripts/sales.ts",
+    "run-secondary": "ts-node src/scripts/secondary-sales.ts",
     "build": "tsc --noEmit"
   },
   "dependencies": {

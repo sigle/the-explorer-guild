@@ -1,52 +1,36 @@
-import {
-  AccountsApi,
-  Configuration,
-  TransactionsApi,
-} from "@stacks/blockchain-api-client";
+import { AccountsApi, TransactionsApi } from "@stacks/blockchain-api-client";
 import type { Transaction } from "@stacks/stacks-blockchain-api-types";
-import { fetch } from "undici";
 import { format } from "date-fns";
-import { config } from "./config";
+import { config } from "../config";
 import { writeFileSync } from "fs";
-import { microToStacks } from "./utils";
-import { getSTXPrice } from "./coingecko";
+import { getTransactions, microToStacks } from "../utils/utils";
+import { getSTXPrice } from "../utils/coingecko";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 const run = async () => {
-  const configuration = new Configuration({ fetchApi: fetch });
-  const accountsApi = new AccountsApi(configuration);
-  const transactionsApi = new TransactionsApi(configuration);
+  const accountsApi = new AccountsApi();
+  const transactionsApi = new TransactionsApi();
+
+  const startDate = new Date("2023-02-20");
+  const endDate = new Date("2023-02-26");
 
   const results: {
     date: string;
     txId: string;
-    nftId: number;
     amountSTX: number;
     amountEUR: number;
     STXprice: number;
   }[] = [];
-  const transactions: Transaction[] = [];
 
-  /**
-   * Get the full list of transactions for the secondary sale address.
-   */
-  let offset = 0;
-  const limit = 50;
-  while (true) {
-    const transactionsResults = await accountsApi.getAccountTransactions({
-      principal: config.secondarySalesAddress,
-      limit,
-      offset,
-    });
-    if (transactionsResults.results.length < limit) {
-      break;
-    }
-    transactions.push(...(transactionsResults.results as Transaction[]));
-    offset += limit;
-  }
+  const transactions = await getTransactions({
+    accountsApi,
+    startDate,
+    endDate,
+    principal: config.secondarySalesAddress,
+  });
 
   console.log(`Starting to process ${transactions.length} transactions`);
 
@@ -59,7 +43,7 @@ const run = async () => {
       txId: transaction.tx_id,
     })) as Transaction;
 
-    // We only report smart contracts calls
+    // We only report smart contracts calls of sales events.
     if (detailedTransaction.tx_type === "contract_call") {
       const secondarySaleEvent = detailedTransaction.events.find(
         (event) =>
@@ -79,6 +63,7 @@ const run = async () => {
             ? microToStacks(Number(secondarySaleEvent.asset.amount))
             : 0;
         const STXprice = await getSTXPrice(date);
+
         // Round to 2 decimals
         const STXpriceRounded = Math.floor(STXprice * 100) / 100;
         const EURpriceRounded = Math.floor(STXprice * amountSTX * 100) / 100;
@@ -86,19 +71,20 @@ const run = async () => {
         results.push({
           date,
           txId: detailedTransaction.tx_id,
-          nftId:
-            nftSaleEvent.event_type === "non_fungible_token_asset"
-              ? Number(nftSaleEvent.asset.value.repr.replace("u", ""))
-              : 0,
           amountSTX,
           amountEUR: EURpriceRounded,
           STXprice: STXpriceRounded,
         });
+      } else {
+        console.log(
+          `Skipping ${detailedTransaction.tx_id} - ${detailedTransaction.tx_type}`
+        );
       }
+    } else {
+      console.log(
+        `Skipping ${detailedTransaction.tx_id} - ${detailedTransaction.tx_type}`
+      );
     }
-
-    // console.log(JSON.stringify(transaction, null, 2));
-    // console.log(JSON.stringify(detailedTransaction, null, 2));
 
     /**
      * To avoid hitting the coingecko API rate limit,
@@ -109,22 +95,26 @@ const run = async () => {
   }
 
   if (results.length > 0) {
-    console.log(`About to insert ${results.length} rows`);
     writeFileSync(
-      `./${config.secondarySalesFilename}`,
-      `Date,Transaction id,NFT id,STX received, STX received in EUR,1 STX in EUR
-      ${results
-        .map(
-          (txn) =>
-            `${txn.date},${txn.txId},${txn.nftId},${txn.amountSTX},${txn.amountEUR},${txn.STXprice}`
-        )
-        .join("\n")}
+      `./${config.salesFilename}`,
+      `Date,Transaction id,STX received, STX received in EUR,1 STX in EUR
+${results
+  .map(
+    (txn) =>
+      `${txn.date},${txn.txId},${txn.amountSTX},${txn.amountEUR},${txn.STXprice}`
+  )
+  .join("\n")}
     `,
       { encoding: "utf8" }
     );
 
-    console.log(`Created file ${config.secondarySalesFilename}`);
+    console.log(`Created file ${config.salesFilename}:`);
+    console.log(`- ${results.length} transactions`);
+    console.log(`- Total STX: ${results.reduce((a, b) => a + b.amountSTX, 0)}`);
   }
 };
 
-run();
+run().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
