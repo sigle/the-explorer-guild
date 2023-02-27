@@ -1,12 +1,9 @@
 import { AccountsApi, TransactionsApi } from "@stacks/blockchain-api-client";
-import type {
-  Transaction,
-  TransactionEventStxAsset,
-} from "@stacks/stacks-blockchain-api-types";
+import type { Transaction } from "@stacks/stacks-blockchain-api-types";
 import { format } from "date-fns";
 import { config } from "../config";
 import { writeFileSync } from "fs";
-import { getTransactions, isSaleTransaction, microToStacks } from "../utils";
+import { getTransactions, microToStacks } from "../utils";
 import { getSTXPrice } from "../coingecko";
 
 function sleep(ms: number) {
@@ -47,27 +44,42 @@ const run = async () => {
     })) as Transaction;
 
     // We only report smart contracts calls of sales events.
-    if (isSaleTransaction(detailedTransaction)) {
-      const eventSTX = detailedTransaction.events.find(
+    if (detailedTransaction.tx_type === "contract_call") {
+      const secondarySaleEvent = detailedTransaction.events.find(
         (event) =>
           event.event_type === "stx_asset" &&
+          event.asset.asset_event_type === "transfer" &&
           event.asset.recipient === config.secondarySalesAddress
-      ) as TransactionEventStxAsset;
-      const royaltyAmountInSTX = microToStacks(eventSTX.asset.amount!);
+      );
+      const nftSaleEvent = detailedTransaction.events.find(
+        (event) =>
+          event.event_type === "non_fungible_token_asset" &&
+          event.asset.asset_event_type === "transfer" &&
+          event.asset.asset_id === config.nftName
+      );
+      if (secondarySaleEvent && nftSaleEvent) {
+        const amountSTX =
+          secondarySaleEvent.event_type === "stx_asset"
+            ? microToStacks(Number(secondarySaleEvent.asset.amount))
+            : 0;
+        const STXprice = await getSTXPrice(date);
 
-      const STXprice = await getSTXPrice(date);
+        // Round to 2 decimals
+        const STXpriceRounded = Math.floor(STXprice * 100) / 100;
+        const EURpriceRounded = Math.floor(STXprice * amountSTX * 100) / 100;
 
-      const STXpriceRounded = Math.floor(STXprice * 100) / 100;
-      const EURpriceRounded =
-        Math.floor(STXprice * royaltyAmountInSTX * 100) / 100;
-
-      results.push({
-        date,
-        txId: detailedTransaction.tx_id,
-        amountSTX: royaltyAmountInSTX,
-        amountEUR: EURpriceRounded,
-        STXprice: STXpriceRounded,
-      });
+        results.push({
+          date,
+          txId: detailedTransaction.tx_id,
+          amountSTX,
+          amountEUR: EURpriceRounded,
+          STXprice: STXpriceRounded,
+        });
+      } else {
+        console.log(
+          `Skipping ${detailedTransaction.tx_id} - ${detailedTransaction.tx_type}`
+        );
+      }
     } else {
       console.log(
         `Skipping ${detailedTransaction.tx_id} - ${detailedTransaction.tx_type}`
