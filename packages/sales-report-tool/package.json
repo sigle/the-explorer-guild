@@ -8,7 +8,8 @@
   "dependencies": {
     "@stacks/blockchain-api-client": "7.0.1",
     "@stacks/stacks-blockchain-api-types": "7.0.1",
-    "date-fns": "2.29.3"
+    "date-fns": "2.29.3",
+    "undici": "5.20.0"
   },
   "devDependencies": {
     "@types/node": "18.14.2",

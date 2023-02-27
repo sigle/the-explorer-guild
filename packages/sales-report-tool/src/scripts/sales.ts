@@ -3,10 +3,10 @@ import type {
   Transaction,
   TransactionEventStxAsset,
 } from "@stacks/stacks-blockchain-api-types";
-import { addDays, format, isAfter, isBefore } from "date-fns";
+import { format } from "date-fns";
 import { config } from "../config";
 import { writeFileSync } from "fs";
-import { isSaleTransaction, microToStacks } from "../utils";
+import { getTransactions, isSaleTransaction, microToStacks } from "../utils";
 import { getSTXPrice } from "../coingecko";
 
 function sleep(ms: number) {
@@ -27,44 +27,13 @@ const run = async () => {
     amountEUR: number;
     STXprice: number;
   }[] = [];
-  const transactions: Transaction[] = [];
 
-  /**
-   * Get the full list of transactions for the sale address.
-   * Based on the startDate and endDate, we can filter the transactions.
-   */
-  let offset = 0;
-  const limit = 50;
-  while (true) {
-    const transactionsResults = await accountsApi.getAccountTransactions({
-      principal: config.secondarySalesAddress,
-      limit,
-      offset,
-    });
-    // If we get less transactions than the limit, we reached the end.
-    if (transactionsResults.results.length < limit) {
-      break;
-    }
-    for (const transaction of transactionsResults.results as Transaction[]) {
-      const transactionDate = new Date(transaction.burn_block_time * 1000);
-      const isWithinDateRange =
-        isAfter(transactionDate, startDate) &&
-        // We add one day to the endDate to include the last day.
-        isBefore(transactionDate, addDays(endDate, 1));
-      if (isWithinDateRange) {
-        transactions.push(transaction);
-      }
-    }
-    // If one of the transaction is before the startDate, we can stop.
-    if (
-      (transactionsResults.results as Transaction[]).some((transaction) =>
-        isBefore(new Date(transaction.burn_block_time * 1000), startDate)
-      )
-    ) {
-      break;
-    }
-    offset += limit;
-  }
+  const transactions = await getTransactions({
+    accountsApi,
+    startDate,
+    endDate,
+    principal: config.secondarySalesAddress,
+  });
 
   console.log(`Starting to process ${transactions.length} transactions`);
 
