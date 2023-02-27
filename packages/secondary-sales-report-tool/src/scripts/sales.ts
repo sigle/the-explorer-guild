@@ -3,7 +3,7 @@ import type {
   Transaction,
   TransactionEventStxAsset,
 } from "@stacks/stacks-blockchain-api-types";
-import { format, isAfter, isBefore } from "date-fns";
+import { addDays, format, isAfter, isBefore } from "date-fns";
 import { config } from "../config";
 import { writeFileSync } from "fs";
 import { isSaleTransaction, microToStacks } from "../utils";
@@ -17,8 +17,8 @@ const run = async () => {
   const accountsApi = new AccountsApi();
   const transactionsApi = new TransactionsApi();
 
-  const startDate = new Date("2023-02-01");
-  const endDate = new Date("2023-02-28");
+  const startDate = new Date("2023-02-20");
+  const endDate = new Date("2023-02-26");
 
   const results: {
     date: string;
@@ -49,7 +49,9 @@ const run = async () => {
       const transactionDate = new Date(transaction.burn_block_time * 1000);
       const isWithinDateRange =
         isAfter(transactionDate, startDate) &&
-        isBefore(transactionDate, endDate);
+        // We add one day to the endDate to include the last day.
+        isBefore(transactionDate, addDays(endDate, 1));
+      console.log(startDate, transactionDate, endDate, isWithinDateRange);
       if (isWithinDateRange) {
         transactions.push(transaction);
       }
