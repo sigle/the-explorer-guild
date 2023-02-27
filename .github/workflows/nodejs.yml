@@ -50,14 +50,14 @@ jobs:
       - name: Build
         run: pnpm run build
 
-  secondary-sales-report-tool:
+  sales-report-tool:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
         node-version: [18]
     defaults:
       run:
-        working-directory: packages/secondary-sales-report-tool
+        working-directory: packages/sales-report-tool
 
     steps:
       - uses: actions/checkout@v2
