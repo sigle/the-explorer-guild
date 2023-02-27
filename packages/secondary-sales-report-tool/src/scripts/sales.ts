@@ -51,7 +51,6 @@ const run = async () => {
         isAfter(transactionDate, startDate) &&
         // We add one day to the endDate to include the last day.
         isBefore(transactionDate, addDays(endDate, 1));
-      console.log(startDate, transactionDate, endDate, isWithinDateRange);
       if (isWithinDateRange) {
         transactions.push(transaction);
       }
